@@ -24,24 +24,30 @@
         .restart-btn:hover { background-color: #0056b3; }
         button { transition: transform 0.2s; }
         button:hover { transform: scale(1.1); }
+        #quizContainer { display: none; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Test de Vocabulario - Restaurante</h2>
-        <form id="quizForm">
-            <div id="questions"></div>
-            <button type="button" onclick="checkAnswers()">Verificar respuestas</button>
-            <button type="button" class="restart-btn" onclick="restartTest()">🔄 Reiniciar Test</button>
-        </form>
-        <p id="result"></p>
-        <div id="starRating" class="star-rating"></div>
+        <h2>Test de Vocabulario</h2>
+        <button type="button" onclick="toggleTest()">📖 Test Restaurante</button>
+        <div id="quizContainer">
+            <form id="quizForm">
+                <div id="questions"></div>
+                <button type="button" onclick="checkAnswers()">Verificar respuestas</button>
+                <button type="button" class="restart-btn" onclick="restartTest()">🔄 Reiniciar Test</button>
+            </form>
+            <p id="result"></p>
+            <div id="starRating" class="star-rating"></div>
+        </div>
     </div>
     <script src="script.js"></script>
-</body>
-</html>
-
-        
+    <script>
+        function toggleTest() {
+            var quizContainer = document.getElementById("quizContainer");
+            quizContainer.style.display = quizContainer.style.display === "none" ? "block" : "none";
+        }
     </script>
 </body>
 </html>
+
