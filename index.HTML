@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Vocabulario</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-image: url('https://drive.google.com/uc?export=view&id=1PL6F3SarYNMXYvX-LbXCegbL-jSbfoYP');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        .container { max-width: 500px; margin: auto; padding: 20px; background: rgba(255, 255, 255, 0.8); border-radius: 10px; }
+        .question { margin: 10px 0; }
+        .correct { color: green; }
+        .incorrect { color: red; display: block; }
+        .pronunciation { color: blue; font-style: italic; display: block; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Test de Vocabulario - Restaurante</h2>
+        <form id="quizForm">
+            <div id="questions"></div>
+            <button type="button" onclick="checkAnswers()">Verificar respuestas</button>
+        </form>
+        <p id="result"></p>
+    </div>
+
+    <script>
+        const vocabulary = [
+            { question: "¿Cómo se escribe 'mesa' en inglés?", answer: "Table", pronunciation: "teibol" },
+            { question: "¿Cómo se escribe 'silla' en inglés?", answer: "Chair", pronunciation: "cher" },
+            { question: "¿Cómo se escribe 'menú' en inglés?", answer: "Menu", pronunciation: "meniu" },
+            { question: "¿Cómo se escribe 'plato' en inglés?", answer: "Plate", pronunciation: "pleit" },
+            { question: "¿Cómo se escribe 'vaso' en inglés?", answer: "Glass", pronunciation: "glas" },
+            { question: "¿Cómo se escribe 'taza' en inglés?", answer: "Cup", pronunciation: "kap" },
+            { question: "¿Cómo se escribe 'cuchillo' en inglés?", answer: "Knife", pronunciation: "naif" },
+            { question: "¿Cómo se escribe 'tenedor' en inglés?", answer: "Fork", pronunciation: "fork" },
+            { question: "¿Cómo se escribe 'cuchara' en inglés?", answer: "Spoon", pronunciation: "spun" },
+            { question: "¿Cómo se escribe 'servilleta' en inglés?", answer: "Napkin", pronunciation: "napkin" },
+            { question: "¿Cómo se escribe 'sal' en inglés?", answer: "Salt", pronunciation: "solt" },
+            { question: "¿Cómo se escribe 'pimienta' en inglés?", answer: "Pepper", pronunciation: "peper" },
+            { question: "¿Cómo se escribe 'agua' en inglés?", answer: "Water", pronunciation: "uóter" },
+            { question: "¿Cómo se escribe 'jugo' en inglés?", answer: "Juice", pronunciation: "yus" },
+            { question: "¿Cómo se escribe 'pan' en inglés?", answer: "Bread", pronunciation: "bred" },
+            { question: "¿Cómo se escribe 'camarero/mesero' en inglés?", answer: "Waiter", pronunciation: "ueiter" },
+            { question: "¿Cómo se escribe 'camarera/mesera' en inglés?", answer: "Waitress", pronunciation: "ueitres" },
+            { question: "¿Cómo se escribe 'cocina' en inglés?", answer: "Kitchen", pronunciation: "kitchen" },
+            { question: "¿Cómo se escribe 'cuenta' en inglés?", answer: "Bill", pronunciation: "bil" },
+            { question: "¿Cómo se escribe 'propina' en inglés?", answer: "Tip", pronunciation: "tip" }
+        ];
+
+        const questionsContainer = document.getElementById("questions");
+        
+        vocabulary.forEach((item, index) => {
+            const div = document.createElement("div");
+            div.classList.add("question");
+            div.innerHTML = `
+                <label>${item.question}</label><br>
+                <input type="text" id="answer${index}" autocomplete="off">
+                <span id="result${index}"></span>
+                <br>
+                <span class="pronunciation" id="pronunciation${index}"></span>
+                <br>
+            `;
+            questionsContainer.appendChild(div);
+        });
+
+        function checkAnswers() {
+            let correctCount = 0;
+            vocabulary.forEach((item, index) => {
+                const userAnswer = document.getElementById(`answer${index}`).value.trim();
+                const resultSpan = document.getElementById(`result${index}`);
+                const pronunciationSpan = document.getElementById(`pronunciation${index}`);
+                
+                if (userAnswer.toLowerCase() === item.answer.toLowerCase()) {
+                    resultSpan.textContent = "✓ Correcto";
+                    resultSpan.className = "correct";
+                    pronunciationSpan.textContent = ` (Se pronuncia: ${item.pronunciation})`;
+                    correctCount++;
+                } else {
+                    resultSpan.textContent = `✗ Incorrecto (Respuesta: ${item.answer})`;
+                    resultSpan.className = "incorrect";
+                    pronunciationSpan.textContent = `Se pronuncia: ${item.pronunciation}`;
+                }
+            });
+            document.getElementById("result").textContent = `Puntuación: ${correctCount} / ${vocabulary.length}`;
+        }
+    </script>
+</body>
+</html>
