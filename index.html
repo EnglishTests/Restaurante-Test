@@ -5,12 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test de Vocabulario</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; }
-        .container { max-width: 500px; margin: auto; padding: 20px; }
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-image: url('https://github.com/EnglishTests/Restaurante-Test/blob/main/FondoEnglishclass.png?raw=true');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        .container { max-width: 500px; margin: auto; padding: 20px; background: rgba(255, 255, 255, 0.9); border-radius: 10px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3); }
         .question { margin: 10px 0; }
         .correct { color: green; }
-        .incorrect { color: red; }
-        .pronunciation { color: blue; font-style: italic; }
+        .incorrect { color: red; display: block; }
+        .pronunciation { color: blue; font-style: italic; display: block; }
+        .audio-button { margin-left: 5px; cursor: pointer; }
+        .star-rating { color: gold; font-size: 20px; margin-top: 10px; }
+        .restart-btn { background-color: #007BFF; color: white; padding: 10px; border: none; border-radius: 5px; cursor: pointer; margin-top: 15px; transition: background 0.3s; }
+        .restart-btn:hover { background-color: #0056b3; }
+        button { transition: transform 0.2s; }
+        button:hover { transform: scale(1.1); }
     </style>
 </head>
 <body>
@@ -19,8 +32,10 @@
         <form id="quizForm">
             <div id="questions"></div>
             <button type="button" onclick="checkAnswers()">Verificar respuestas</button>
+            <button type="button" class="restart-btn" onclick="restartTest()">🔄 Reiniciar Test</button>
         </form>
         <p id="result"></p>
+        <div id="starRating" class="star-rating"></div>
     </div>
 
     <script>
@@ -30,21 +45,20 @@
             { question: "¿Cómo se escribe 'menú' en inglés?", answer: "Menu", pronunciation: "meniu" },
             { question: "¿Cómo se escribe 'plato' en inglés?", answer: "Plate", pronunciation: "pleit" },
             { question: "¿Cómo se escribe 'vaso' en inglés?", answer: "Glass", pronunciation: "glas" },
-            { question: "¿Cómo se escribe 'taza' en inglés?", answer: "Cup", pronunciation: "kap" },
-            { question: "¿Cómo se escribe 'cuchillo' en inglés?", answer: "Knife", pronunciation: "naif" },
-            { question: "¿Cómo se escribe 'tenedor' en inglés?", answer: "Fork", pronunciation: "fork" },
             { question: "¿Cómo se escribe 'cuchara' en inglés?", answer: "Spoon", pronunciation: "spun" },
+            { question: "¿Cómo se escribe 'tenedor' en inglés?", answer: "Fork", pronunciation: "fork" },
+            { question: "¿Cómo se escribe 'cuchillo' en inglés?", answer: "Knife", pronunciation: "naif" },
             { question: "¿Cómo se escribe 'servilleta' en inglés?", answer: "Napkin", pronunciation: "napkin" },
-            { question: "¿Cómo se escribe 'sal' en inglés?", answer: "Salt", pronunciation: "solt" },
-            { question: "¿Cómo se escribe 'pimienta' en inglés?", answer: "Pepper", pronunciation: "peper" },
-            { question: "¿Cómo se escribe 'agua' en inglés?", answer: "Water", pronunciation: "uóter" },
-            { question: "¿Cómo se escribe 'jugo' en inglés?", answer: "Juice", pronunciation: "yus" },
-            { question: "¿Cómo se escribe 'pan' en inglés?", answer: "Bread", pronunciation: "bred" },
-            { question: "¿Cómo se escribe 'camarero/mesero' en inglés?", answer: "Waiter", pronunciation: "ueiter" },
-            { question: "¿Cómo se escribe 'camarera/mesera' en inglés?", answer: "Waitress", pronunciation: "ueitres" },
-            { question: "¿Cómo se escribe 'cocina' en inglés?", answer: "Kitchen", pronunciation: "kitchen" },
+            { question: "¿Cómo se escribe 'camarero' en inglés?", answer: "Waiter", pronunciation: "ueiter" },
             { question: "¿Cómo se escribe 'cuenta' en inglés?", answer: "Bill", pronunciation: "bil" },
-            { question: "¿Cómo se escribe 'propina' en inglés?", answer: "Tip", pronunciation: "tip" }
+            { question: "¿Cómo se escribe 'propina' en inglés?", answer: "Tip", pronunciation: "tip" },
+            { question: "¿Cómo se escribe 'cocina' en inglés?", answer: "Kitchen", pronunciation: "kitshen" },
+            { question: "¿Cómo se escribe 'comida' en inglés?", answer: "Food", pronunciation: "fud" },
+            { question: "¿Cómo se escribe 'desayuno' en inglés?", answer: "Breakfast", pronunciation: "brekfast" },
+            { question: "¿Cómo se escribe 'almuerzo' en inglés?", answer: "Lunch", pronunciation: "lonch" },
+            { question: "¿Cómo se escribe 'cena' en inglés?", answer: "Dinner", pronunciation: "diner" },
+            { question: "¿Cómo se escribe 'postre' en inglés?", answer: "Dessert", pronunciation: "dizert" },
+            { question: "¿Cómo se escribe 'bebida' en inglés?", answer: "Drink", pronunciation: "drink" }
         ];
 
         const questionsContainer = document.getElementById("questions");
@@ -56,7 +70,9 @@
                 <label>${item.question}</label><br>
                 <input type="text" id="answer${index}" autocomplete="off">
                 <span id="result${index}"></span>
-                <span class="pronunciation" id="pronunciation${index}"></span>
+                <br>
+                <button type="button" class="audio-button" onclick="speak('${item.answer}')">🔊</button>
+                <span class="pronunciation">(${item.pronunciation})</span>
                 <br>
             `;
             questionsContainer.appendChild(div);
@@ -67,20 +83,32 @@
             vocabulary.forEach((item, index) => {
                 const userAnswer = document.getElementById(`answer${index}`).value.trim();
                 const resultSpan = document.getElementById(`result${index}`);
-                const pronunciationSpan = document.getElementById(`pronunciation${index}`);
-                
                 if (userAnswer.toLowerCase() === item.answer.toLowerCase()) {
-                    resultSpan.textContent = "✓ Correcto";
+                    resultSpan.textContent = "✔ Correcto";
                     resultSpan.className = "correct";
                     correctCount++;
                 } else {
-                    resultSpan.textContent = `✗ Incorrecto (Respuesta: ${item.answer})`;
+                    resultSpan.textContent = `✘ Incorrecto. Respuesta: ${item.answer}`;
                     resultSpan.className = "incorrect";
                 }
-                pronunciationSpan.textContent = ` (Se pronuncia: ${item.pronunciation})`;
             });
-            document.getElementById("result").textContent = `Puntuación: ${correctCount} / ${vocabulary.length}`;
+            document.getElementById("result").textContent = `Puntaje: ${correctCount} de ${vocabulary.length}`;
+        }
+
+        function restartTest() {
+            document.querySelectorAll("input[type=text]").forEach(input => input.value = "");
+            document.getElementById("result").textContent = "";
+            vocabulary.forEach((_, index) => {
+                document.getElementById(`result${index}`).textContent = "";
+            });
+        }
+
+        function speak(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = "en-US";
+            speechSynthesis.speak(utterance);
         }
     </script>
 </body>
 </html>
+
